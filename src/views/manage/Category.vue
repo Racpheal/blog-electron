@@ -1,15 +1,16 @@
 <template>
-  <div id="app">
-    <router-view />
+  <div>
+    <h1>分类管理</h1>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 
-export default class App extends Vue {}
+@Component
+export default class ManageCategory extends Vue {
+}
 </script>
 
-<style lang="less">
-
+<style lang="less" scoped>
 </style>
