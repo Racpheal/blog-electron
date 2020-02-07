@@ -35,10 +35,37 @@ module.exports = class BlogEditorService {
         ON (t_blog.category_id = a.category_id) 
       LEFT JOIN t_category b 
         ON (a.parent_category_id = b.category_id)
-      WHERE t_blog.blog_id = '${blogId}'
+      WHERE t_blog.blog_id = '${blogId}' AND t_blog.is_deleted = 0
     `;
     this.sqlite.select(sql, (data) => {
       callback(data[0]);
+    });
+  }
+  
+  deleteBlog(blogId, callback) {
+    const sql = `UPDATE t_blog SET is_deleted='1', category_id=null WHERE blog_id = '${blogId}'`;
+    this.sqlite.run(sql, (ret) => {
+      if (ret === null) {
+        callback(true, blogId);
+      }
+    });
+  }
+
+  dropBlog(blogId, callback) {
+    const sql = `DELETE FROM t_blog WHERE blog_id = '${blogId}' AND is_deleted = 1`;
+    this.sqlite.run(sql, (ret) => {
+      if (ret === null) {
+        callback(true, blogId);
+      }
+    });
+  }
+
+  recycleBlog(blogId, callback) {
+    const sql = `UPDATE t_blog SET is_deleted='0' WHERE blog_id = '${blogId}'`;
+    this.sqlite.run(sql, (ret) => {
+      if (ret === null) {
+        callback(true, blogId);
+      }
     });
   }
 };

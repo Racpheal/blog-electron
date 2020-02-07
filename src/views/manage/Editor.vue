@@ -7,9 +7,11 @@
       <Radio
         v-for='category in categories.filter(x => x.category_level === 2)'
         :label='category.category_id'
-        :key='category.category_id'>
+        :key='category.category_id'
+        style='margin-left: 20px;'>
         {{ `${category.parent_category_name} >> ${category.category_name}` }}
       </Radio>
+      <Radio label='' style='margin-left: 20px;'>无分类</Radio>
     </RadioGroup>
     <Divider />
     <h3>编辑内容</h3>
@@ -128,10 +130,10 @@ export default class ManageEditor extends Vue {
     this.blogId = '';
     this.imageContent = [];
     // eslint-disable-next-line max-len
-    this.selectedCategoryId = this.categories.filter((x: any) => x.category_level === 2)[0].category_id;
     if (this.$route.query.bid !== undefined && this.$route.query.bid !== null && this.$route.query.bid !== '') {
       this.blogId = this.$route.query.bid.toString();
       const data = ipcRenderer.sendSync('get_blog', this.blogId);
+      console.log(data);
       this.title = data.title;
       this.content = data.content;
       this.summary = data.summary;
@@ -155,6 +157,7 @@ export default class ManageEditor extends Vue {
       });
       return;
     }
+    console.log(this.selectedCategoryId);
     const ret = ipcRenderer.sendSync('save_blog', {
       title: this.title,
       content: this.content,

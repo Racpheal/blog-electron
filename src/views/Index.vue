@@ -2,10 +2,10 @@
   <div>
     <Layout>
       <Sider hide-trigger>
-        <Menu theme="dark"  width="auto" style='height: 100vh'>
+        <Menu theme="dark" width="auto" style='height: 100vh'>
           <Submenu name="blog">
             <template slot="title">
-              <Icon type="ios-paper" />
+              <Icon type="ios-paper" @click='refresh' />
               我的博客
             </template>
             <MenuItem
@@ -17,7 +17,27 @@
                     hash: Math.ceil(Math.random()*1000000)
                   }
                 }'>全部
-              </MenuItem>
+            </MenuItem>
+            <MenuItem
+              name='no_catgory'
+              :to='{
+                name: "blog_list",
+                query: {
+                  cid: -2,
+                  hash: Math.ceil(Math.random()*1000000)
+                }
+              }'>未分类
+            </MenuItem>
+            <MenuItem
+              name='recycle'
+              :to='{
+                name: "blog_list",
+                query: {
+                  cid: -3,
+                  hash: Math.ceil(Math.random()*1000000)
+                }
+              }'>回收站
+            </MenuItem>
             <Submenu
               v-for='cate in categories.filter(x => x.category_level === 1)'
               :name="cate.category_id"
@@ -74,6 +94,10 @@ export default class Index extends Vue {
 
   constructor() {
     super();
+    this.refresh();
+  }
+
+  private refresh() {
     this.categories = ipcRenderer.sendSync('get_categories');
   }
 }

@@ -21,5 +21,23 @@ module.exports = class BlogEditorController {
         event.returnValue = data;
       });
     });
+
+    ipcMain.on('delete_blog', (event, bid) => {
+      this.blogEditorService.deleteBlog(bid, (ret) => {
+        event.returnValue = ret;
+      });
+    });
+
+    ipcMain.on('drop_blog', (event, bid) => {
+      this.blogEditorService.dropBlog(bid, (ret) => {
+        event.returnValue = ret;
+      });
+    });
+
+    ipcMain.on('recycle_blog', (event, bid) => {
+      this.blogEditorService.recycleBlog(bid, (ret) => {
+        event.returnValue = ret;
+      });
+    });
   }
 };
