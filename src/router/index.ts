@@ -20,11 +20,6 @@ const routes = [
         component: () => import('@/views/manage/Category.vue'),
       },
       {
-        path: '/manage/list',
-        name: 'manage_list',
-        component: () => import('@/views/manage/List.vue'),
-      },
-      {
         path: '/blog/list',
         name: 'blog_list',
         component: () => import('@/views/blog/List.vue'),

@@ -13,8 +13,8 @@ module.exports = class BlogEditorService {
     }
     const sql = `
       DELETE FROM t_blog WHERE blog_id = '${blogId}';
-      INSERT INTO t_blog('blog_id', 'category_id', 'title', 'content', 'summary', 'images')
-        VALUES ('${blogId}' , '${blogInfo.category_id}', '${blogInfo.title}', '${blogInfo.content}', '${blogInfo.summary}', '${blogInfo.images}') 
+      INSERT INTO t_blog('blog_id', 'category_id', 'title', 'content', 'summary', 'images', 'keywords')
+        VALUES ('${blogId}' , '${blogInfo.category_id}', '${blogInfo.title}', '${blogInfo.content}', '${blogInfo.summary}', '${blogInfo.images}', '${blogInfo.keywords}') 
     `;
     this.sqlite.run(sql, (data, err) => {
       if (data === null) {

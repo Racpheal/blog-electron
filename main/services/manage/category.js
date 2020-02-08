@@ -62,11 +62,13 @@ module.exports = class CategoryService {
 
   getCategories(callback) {
     this.sqlite.select(`
-      SELECT 
-        a.*, 
-        b.category_name AS parent_category_name 
-      FROM t_category a LEFT JOIN t_category b 
-        ON (a.parent_category_id = b.category_id)`, (data) => {
+    SELECT 
+      a.*,
+      b.category_name AS parent_category_name,
+      (SELECT COUNT(1) FROM t_blog WHERE category_id = a.category_id AND is_deleted = 0) AS count
+    FROM t_category a
+    LEFT JOIN t_category b
+    ON (a.parent_category_id = b.category_id)`, (data) => {
       callback(data);
     });
   }
@@ -128,6 +130,24 @@ module.exports = class CategoryService {
       WHERE t.category_id IN 
         (SELECT category_id FROM t_category WHERE parent_category_id = '${cid}')
         AND t.is_deleted = 0
+      `, (data) => {
+      callback(data);
+    });
+  }
+
+  getBlogsByKeyword(keyword, callback) {
+    this.sqlite.select(`
+      SELECT 
+        t.*, 
+        a.category_name, 
+        b.category_id AS parent_category_id, 
+        b.category_name AS parent_category_name 
+      FROM t_blog t
+      LEFT JOIN t_category a 
+        ON (t.category_id = a.category_id) 
+      LEFT JOIN t_category b 
+        ON (a.parent_category_id = b.category_id)
+      WHERE t.keywords LIKE '%${keyword}%' AND t.is_deleted = 0
       `, (data) => {
       callback(data);
     });

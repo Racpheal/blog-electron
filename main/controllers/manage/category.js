@@ -61,6 +61,12 @@ module.exports = class ManageCategoryController {
       });
     });
 
+    ipcMain.on('get_blogs_by_keyword', (event, keyword) => {
+      this.categoryService.getBlogsByKeyword(keyword, (data) => {
+        event.returnValue = data;
+      });
+    });
+
     ipcMain.on('delete_category', (event, arg) => {
       this.categoryService.deleteCategory(arg.category_id, arg.category_level, (ret) => {
         event.returnValue = ret;

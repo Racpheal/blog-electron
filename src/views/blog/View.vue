@@ -2,8 +2,8 @@
   <div>
     <h1>{{ blog.title }}</h1>
     <Breadcrumb style='margin-top: 10px;'>
-      <BreadcrumbItem to="/">{{ blog.parent_category_name }}</BreadcrumbItem>
-      <BreadcrumbItem to="/components/breadcrumb">{{ blog.category_name }}</BreadcrumbItem>
+      <BreadcrumbItem>{{ blog.parent_category_name }}</BreadcrumbItem>
+      <BreadcrumbItem>{{ blog.category_name }}</BreadcrumbItem>
       <BreadcrumbItem>{{ blog.title }}</BreadcrumbItem>
     </Breadcrumb>
     <mavon-editor
@@ -19,7 +19,7 @@
       :boxShadow='false'
       :transition='false'
       ref='mde'
-      v-model="blog.content"/>
+      v-model="content"/>
   </div>
 </template>
 
@@ -31,6 +31,14 @@ const { ipcRenderer } = (window as any).require('electron');
 @Component
 export default class ManageEditor extends Vue {
   private blog:any = {};
+
+  private get content() {
+    return decodeURIComponent(atob(this.blog.content));
+  }
+
+  private set content(value: string) {
+    this.blog.content = btoa(encodeURIComponent(value));
+  }
 
   private beforeMount() {
     const blogId = this.$route.query.bid;

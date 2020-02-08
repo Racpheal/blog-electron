@@ -2,7 +2,7 @@
   <div>
     <Layout>
       <Sider hide-trigger>
-        <Menu theme="dark" width="auto" style='height: 100vh'>
+        <Menu theme="dark" width="auto" class='menu'>
           <Submenu name="blog">
             <template slot="title">
               <Icon type="ios-paper" @click='refresh' />
@@ -55,7 +55,9 @@
                     cid: cate2.category_id,
                     hash: Math.ceil(Math.random()*1000000)
                   }
-                }'>{{ cate2.category_name }}
+                }'>
+                {{ cate2.category_name }}
+                <Badge :count="cate2.count" type='info'></Badge>
               </MenuItem>
             </Submenu>
           </Submenu>
@@ -73,6 +75,18 @@
             <!-- <MenuItem name="list" to='/manage/list'>我的博客</MenuItem> -->
             <MenuItem name="category" to='/manage/category'>分类管理</MenuItem>
           </Submenu>
+          <div class='tagPanel'>
+            <h4 style='color: white; margin-left: 10px;'>关键词</h4>
+            <Button
+              v-for='(keyword, index) in keywords'
+              :key='keyword'
+              class='tag'
+              :type="['primary', 'success', 'error', 'warning'][index % 4]"
+              size='small'
+              @click='keywordClick(keyword)'>
+              {{keyword}}
+            </Button>
+          </div>
         </Menu>
       </Sider>
       <Content>
@@ -92,13 +106,27 @@ const { ipcRenderer } = (window as any).require('electron');
 export default class Index extends Vue {
   private categories: Array<object> = [];
 
-  constructor() {
-    super();
-    this.refresh();
-  }
+  private keywords: Array<string> = [];
 
   private refresh() {
     this.categories = ipcRenderer.sendSync('get_categories');
+    this.keywords = ipcRenderer.sendSync('get_keywords');
+    console.log(this.categories);
+  }
+
+  private beforeMount() {
+    this.refresh();
+  }
+
+  private keywordClick(keyword: string) {
+    (this.$router as any).push({
+      name: 'blog_list',
+      query: {
+        cid: -4,
+        keyword,
+        hash: Math.ceil(Math.random() * 1000000),
+      },
+    });
   }
 }
 </script>
@@ -113,5 +141,23 @@ export default class Index extends Vue {
   width: 240px !important;
   min-width: 240px !important;
   max-width: 240px !important;
+  height: 100vh;
+}
+
+.menu {
+  position: fixed;
+  width: 240px !important;
+}
+
+.ivu-badge {
+  float: right;
+}
+
+.tagPanel {
+  padding: 15px;
+}
+
+.tag {
+  margin:5px;
 }
 </style>

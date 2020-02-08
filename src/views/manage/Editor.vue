@@ -1,52 +1,78 @@
 <template>
-  <div>
-    <h1>编辑博客</h1>
-    <Divider />
-    <h3>设置分类</h3>
-    <RadioGroup style='margin-top: 10px;' v-model="selectedCategoryId">
-      <Radio
-        v-for='category in categories.filter(x => x.category_level === 2)'
-        :label='category.category_id'
-        :key='category.category_id'
-        style='margin-left: 20px;'>
-        {{ `${category.parent_category_name} >> ${category.category_name}` }}
-      </Radio>
-      <Radio label='' style='margin-left: 20px;'>无分类</Radio>
-    </RadioGroup>
-    <Divider />
-    <h3>编辑内容</h3>
-    <div class='header'>
-      <Input v-model='title' class='input' placeholder="请输入标题"/>
-      <Button @click='saveBlog' type='primary' class='button'>保存</Button>
-      <Button @click='showImageContents = true' class='button'>查看包含的图片</Button>
-    </div>
-    <mavon-editor
-      v-model="content" placeholder=" "
-      :toolbars='toolbarConfig'
-      @save='saveBlog'
-      style="height: 55vh; z-index: 10"
-      @change='contentChange'
-      ref='mde'
-      @imgAdd="imgAdd"
-      @imgDel='imgDel'/>
-    <Divider />
-    <h3>设置摘要</h3>
-    <Checkbox
-      style='margin-top: 10px; display: block'
-      v-model="createSummary">摘要</Checkbox>
-    <Input style='margin-top: 10px;'
-      v-if='createSummary'
-      type='textarea'
-      v-model="summary"
-      placeholder="请输入摘要"
-      :autosize='{ minRows: 2, maxRows: 6 }'/>
+  <Layout>
+    <Row>
+      <h1>编辑博客</h1>
+      <Divider />
+    </Row>
+    <Row>
+      <h3>设置分类</h3>
+      <RadioGroup v-model="selectedCategoryId">
+        <Radio
+          v-for='category in categories.filter(x => x.category_level === 2)'
+          :label='category.category_id'
+          :key='category.category_id'
+          class='radio_item'>
+          {{ `${category.parent_category_name} >> ${category.category_name}` }}
+        </Radio>
+        <Radio class='radio_item' label=''>无分类</Radio>
+      </RadioGroup>
+      <Divider />
+    </Row>
+    <Row>
+      <h3>编辑内容</h3>
+      <div class='header'>
+        <Input v-model='title' class='input' placeholder="请输入标题"/>
+        <Button @click='saveBlog' type='primary' class='button'>保存</Button>
+        <Button @click='showImageContents = true' class='button'>查看包含的图片</Button>
+      </div>
+      <mavon-editor
+        v-model="content" placeholder=" "
+        :toolbars='toolbarConfig'
+        @save='saveBlog'
+        style="height: 50vh; z-index: 10"
+        @change='contentChange'
+        ref='mde'
+        :tabSize='2'
+        codeStyle='vs'
+        @imgAdd="imgAdd"
+        @imgDel='imgDel'/>
+      <Divider />
+    </Row>
+    <Row>
+      <h3>设置摘要</h3>
+      <Checkbox
+        style='display: block'
+        v-model="createSummary">摘要</Checkbox>
+      <Input style='margin-top: 10px;'
+        v-if='createSummary'
+        type='textarea'
+        v-model="summary"
+        placeholder="请输入摘要"
+        :autosize='{ minRows: 2, maxRows: 6 }'/>
+        <Divider />
+    </Row>
+    <Row>
+      <h3>设置关键词</h3>
+      <Select
+        v-model="keywords"
+        filterable
+        multiple
+        allow-create
+        placeholder='请输入关键词'>
+        <Option
+          v-for="(value, index) in allKeywords"
+          :value="value" :key="index">
+          {{ value }}
+        </Option>
+      </Select>
+    </Row>
     <Drawer
       title="包含的图片"
       :closable="false"
       v-model="showImageContents"
       transfer
       width='300'
-      style='padding: 10px; text-align: center'>
+      style='text-align: center'>
       <li v-for='img in imageContent' :key='img.filename' style='list-style-type: none'>
         <Avatar
           shape="square"
@@ -56,7 +82,7 @@
           <p>{{img.filename}}&nbsp;&nbsp;<a href='#' @click='imgDel(img.filename)'>删除</a></p>
       </li>
     </Drawer>
-  </div>
+  </Layout>
 </template>
 
 <script lang="ts">
@@ -82,6 +108,10 @@ export default class ManageEditor extends Vue {
   private createSummary: boolean = true;
 
   private summary: string = '';
+
+  private keywords: Array<string> = [];
+
+  private allKeywords: Array<string> = [];
 
   private blogId: string = '-1';
 
@@ -135,11 +165,14 @@ export default class ManageEditor extends Vue {
       const data = ipcRenderer.sendSync('get_blog', this.blogId);
       console.log(data);
       this.title = data.title;
-      this.content = data.content;
+      this.content = decodeURIComponent(atob(data.content));
       this.summary = data.summary;
       this.selectedCategoryId = data.category_id;
       this.imageContent = JSON.parse(data.images);
+      this.keywords = data.keywords.split(',');
     }
+    this.allKeywords = ipcRenderer.sendSync('get_keywords');
+    console.log(this.allKeywords);
   }
 
   private mounted() {
@@ -157,14 +190,14 @@ export default class ManageEditor extends Vue {
       });
       return;
     }
-    console.log(this.selectedCategoryId);
     const ret = ipcRenderer.sendSync('save_blog', {
       title: this.title,
-      content: this.content,
+      content: btoa(encodeURIComponent(this.content)),
       images: JSON.stringify(this.imageContent),
       category_id: this.selectedCategoryId,
       summary: this.summary,
       blog_id: this.blogId,
+      keywords: this.keywords.join(','),
     });
     if (ret.ret) {
       this.$Notice.success({
@@ -204,8 +237,11 @@ export default class ManageEditor extends Vue {
 </script>
 
 <style lang="less" scoped>
+h3 {
+  margin-bottom: 10px;
+}
+
 .header {
-  margin-top: 10px;
   margin-bottom: 10px;
 }
 
@@ -216,5 +252,9 @@ export default class ManageEditor extends Vue {
 
 .button {
   margin-left: 10px;
+}
+
+.radio_item {
+  margin-right: 10px;
 }
 </style>

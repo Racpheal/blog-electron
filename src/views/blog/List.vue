@@ -5,14 +5,15 @@
       <ListItem v-for='blog in blogs' :key='blog.blog_id'>
         <ListItemMeta>
           <template slot='title'>
-            >>
-            <router-link v-if='!isRecycle' :to="{
-              name: 'blog_view',
-              query: {
-                bid: blog.blog_id,
-              },
-            }">{{blog.title}}</router-link>
-            <span v-else>{{blog.title}}</span>
+            <h2>
+              <router-link v-if='!isRecycle' :to="{
+                name: 'blog_view',
+                query: {
+                  bid: blog.blog_id,
+                },
+              }">{{blog.title}}</router-link>
+              <span v-else>{{blog.title}}</span>
+            </h2>
           </template>
           <template slot='description'>
             {{ blog.summary }}
@@ -20,17 +21,26 @@
         </ListItemMeta>
         <template slot="action">
           <li v-if='!isRecycle'>
-            <a href='#'>{{blog.parent_category_name}}</a>
-            >>
-            <a href="#">{{blog.category_name}}</a>
+            {{blog.parent_category_name}} >> {{blog.category_name}}
           </li>
           <li>
-            <a v-if='!isRecycle' href="#" @click='editorBlog(blog.blog_id)'>编辑</a>
-            <a v-else href="#" @click='recycleBlog(blog.blog_id)'>恢复</a>
+            关键词：
+            <Button
+              v-for='(keyword, index) in blog.keywords.split(",")'
+              :key='keyword'
+              class='tag'
+              :type="['primary', 'success', 'error', 'warning'][index % 4]"
+              size='small'
+              @click='keywordClick(keyword)'>
+              {{keyword}}
+            </Button>
           </li>
           <li>
-            <a href="#" @click='showDeleteModal(blog)'>删除</a>
+            <a class='tag' v-if='!isRecycle' href="#" @click='editorBlog(blog.blog_id)'>编辑</a>
+            <a class='tag' v-else href="#" @click='recycleBlog(blog.blog_id)'>恢复</a>
+            <a class='tag' href="#" @click='showDeleteModal(blog)'>删除</a>
           </li>
+          <Divider />
         </template>
       </ListItem>
     </List>
@@ -64,6 +74,7 @@ export default class BlogList extends Vue {
 
   private refresh() {
     this.blogs = [];
+    this.isRecycle = false;
     const { cid } = this.$route.query;
     if (cid.toString() === '-1') { // 全部
       this.blogs = ipcRenderer.sendSync('get_blogs');
@@ -80,6 +91,11 @@ export default class BlogList extends Vue {
       this.blogs = ipcRenderer.sendSync('get_deleted_blogs');
       this.categoryName = '回收站';
       this.isRecycle = true;
+      return;
+    }
+    if (cid.toString() === '-4') { // 关键词
+      this.blogs = ipcRenderer.sendSync('get_blogs_by_keyword', this.$route.query.keyword);
+      this.categoryName = `关键词-${this.$route.query.keyword}`;
       return;
     }
     this.blogs = ipcRenderer.sendSync('get_blogs_by_cid', cid);
@@ -115,6 +131,17 @@ export default class BlogList extends Vue {
     this.refresh();
   }
 
+  private keywordClick(keyword: string) {
+    (this.$router as any).push({
+      name: 'blog_list',
+      query: {
+        cid: -4,
+        keyword,
+        hash: Math.ceil(Math.random() * 1000000),
+      },
+    });
+  }
+
   private deleteBlog() {
     if (!this.isRecycle) {
       const ret = ipcRenderer.sendSync('delete_blog', this.targetBlog.blog_id);
@@ -140,4 +167,7 @@ export default class BlogList extends Vue {
 </script>
 
 <style lang="less" scoped>
+.tag {
+  margin-right: 10px;
+}
 </style>
