@@ -1,7 +1,6 @@
 const { app, BrowserWindow } = require('electron');
-const ManageCategoryController = require('./controllers/manage/category');
-const BlogEditorController = require('./controllers/blog/editor');
-const KeywordController = require('./controllers/blog/keyword');
+const PostController = require('./controllers/post');
+const PostCollectionController = require('./controllers/collection');
 
 function createWindow() {
   // 创建浏览器窗口
@@ -15,9 +14,8 @@ function createWindow() {
 
   win.webContents.openDevTools();
 
-  new ManageCategoryController().register();
-  new BlogEditorController().register();
-  new KeywordController().register();
+  new PostController().register();
+  new PostCollectionController().register();
 
   // 加载index.html文件
   win.loadURL('http://localhost:8089/#/');

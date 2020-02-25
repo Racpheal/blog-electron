@@ -10,24 +10,19 @@ const routes = [
     component: () => import('@/views/Index.vue'),
     children: [
       {
-        path: '/manage/editor',
-        name: 'manage_editor',
-        component: () => import('@/views/manage/Editor.vue'),
+        path: '/post/editor',
+        name: 'post_editor',
+        component: () => import('@/views/post/Editor.vue'),
       },
       {
-        path: '/manage/category',
-        name: 'manage_category',
-        component: () => import('@/views/manage/Category.vue'),
+        path: '/post/list',
+        name: 'post_list',
+        component: () => import('@/views/post/List.vue'),
       },
       {
-        path: '/blog/list',
-        name: 'blog_list',
-        component: () => import('@/views/blog/List.vue'),
-      },
-      {
-        path: '/blog/view',
-        name: 'blog_view',
-        component: () => import('@/views/blog/View.vue'),
+        path: '/post/view',
+        name: 'post_view',
+        component: () => import('@/views/post/View.vue'),
       },
     ],
   },
