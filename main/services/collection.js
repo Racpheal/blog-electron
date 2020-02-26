@@ -7,7 +7,7 @@ const Sqlite = require('../library/sqlite');
 
 module.exports = class CollectionService {
   constructor() {
-    this.sqlite = new Sqlite(`${__dirname}/../static/blog.db`);
+    this.sqlite = new Sqlite(`${__dirname}/../static/wiki.db`);
   }
 
   // 获取文章列表结构

@@ -3,7 +3,7 @@ const Sqlite = require('../library/sqlite');
 
 module.exports = class PostService {
   constructor() {
-    this.sqlite = new Sqlite(`${__dirname}/../static/blog.db`);
+    this.sqlite = new Sqlite(`${__dirname}/../static/wiki.db`);
   }
 
   // 新建文章
