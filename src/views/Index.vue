@@ -2,22 +2,24 @@
   <div>
     <Layout>
       <Sider hide-trigger>
-        <div class='logo' style='height:60px;width:100%;background-color:#225081;padding: 10px;'>
-          <h1 style='color: white;margin-left: 20px;'>Wiki</h1>
-        </div>
-        <Content class='sider-content'>
-          <p>页面树结构</p>
-          <Tree :data='treeData' :render='treeRender'></Tree>
-          <Divider />
-          <p>分类</p>
-          <router-link :to="{
-            name: 'post_list',
-            query: {
-              type: 'recycle',
-              hash: Math.ceil(Math.random() * 1000000),
-            },
-          }">回收站</router-link>
-        </Content>
+        <Affix>
+          <div class='logo' style='height:60px;width:100%;background-color:#225081;padding: 10px;'>
+            <h1 style='color: white;margin-left: 20px;'>Wiki</h1>
+          </div>
+          <Content class='sider-content'>
+            <p>页面树结构</p>
+            <Tree :data='treeData' :render='treeRender'></Tree>
+            <Divider />
+            <p>分类</p>
+            <router-link :to="{
+              name: 'post_list',
+              query: {
+                type: 'recycle',
+                hash: Math.ceil(Math.random() * 1000000),
+              },
+            }">回收站</router-link>
+          </Content>
+        </Affix>
       </Sider>
       <Content>
         <router-view :key="$route.path + $route.query.hash"/>

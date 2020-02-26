@@ -1,8 +1,8 @@
 <template>
   <div>
-    <List>
+    <List item-layout='vertical'>
       <ListItem v-for='post in posts' :key='post.post_id'>
-        <ListItemMeta :title="post.title" :description="post.summary" />
+        <ListItemMeta :title="post.title" :description="getSummary(post.summary)" />
         <template slot="action">
           <li>
             <a href="#" @click='recyclePost(post)'>恢复</a>
@@ -33,6 +33,10 @@ export default class BlogList extends Vue {
     this.posts = [];
     this.posts = ipcRenderer.sendSync('get_deleted_posts').data;
     this.$store.state.refresh();
+  }
+
+  private getSummary(summary: string) {
+    return decodeURIComponent(atob(summary));
   }
 
   private recyclePost(postInfo: any) {

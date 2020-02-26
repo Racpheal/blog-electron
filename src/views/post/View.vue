@@ -3,20 +3,20 @@
     <h1>{{ postInfo.title }}</h1>
     <Divider />
     <div class='toolbar'>
-      <a href='#' @click='edit()'>编辑</a>
+      <a href='javascript:void(0)' @click='edit()'>编辑</a>
       <Divider type="vertical" />
-      <a href='#' @click='create()'>新建</a>
+      <a href='javascript:void(0)' @click='create()'>新建</a>
       <Divider type="vertical" />
-      <a href='#' @click='remove()'>删除</a>
+      <a href='javascript:void(0)' @click='remove()'>删除</a>
       <Divider type="vertical" />
-      <a href='#' @click='moveModal=true'>移动</a>
+      <a href='javascript:void(0)' @click='moveModal=true'>移动</a>
       <Divider type="vertical" />
-      <a href='#' @click='navigationClick()'>目录</a>
+      <a href='javascript:void(0)' @click='navigationClick()'>目录</a>
       <Divider type="vertical" />
-      <a href='#' @click='fullScreenClick()'>全屏浏览</a>
+      <a href='javascript:void(0)' @click='fullScreenClick()'>全屏浏览</a>
     </div>
     <mavon-editor
-      style="height: 85vh; z-index: 10;"
+      style="z-index: 10;"
       :toolbars='{}'
       defaultOpen='preview'
       :editable='false'

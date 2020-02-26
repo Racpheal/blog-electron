@@ -50,9 +50,12 @@ module.exports = class PostService {
     });
   }
 
-  // 将文章放入回收站
+  // 将文章放入回收站（文章的子文章会放到根目录下）
   deletePost(postId, callback) {
-    const sql = `UPDATE t_posts SET is_deleted='1', parent_post_id='' WHERE post_id = '${postId}'`;
+    const sql = `
+    UPDATE t_posts SET is_deleted='1', parent_post_id='' WHERE post_id = '${postId}';
+    UPDATE t_posts SET parent_post_id='' WHERE parent_post_id = '${postId}';
+    `;
     this.sqlite.run(sql, (ret, err) => {
       if (ret === null) {
         callback(true, postId);

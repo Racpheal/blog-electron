@@ -53,7 +53,8 @@
     ],
     "rules": {
       "lines-between-class-members": "off",
-      "max-len": "off"
+      "max-len": "off",
+      "class-methods-use-this": "off"
     },
     "parserOptions": {
       "parser": "@typescript-eslint/parser"

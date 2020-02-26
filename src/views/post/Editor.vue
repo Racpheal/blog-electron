@@ -25,20 +25,16 @@
       <Divider />
     </Row>
     <Row>
-      <h3>设置摘要</h3>
-      <Checkbox
-        style='display: block'
-        v-model="createSummary">摘要</Checkbox>
+      <h3>摘要<small><a href='javascript:void(0)' style='margin-left: 10px;' @click='createSummary'>生成摘要</a></small></h3>
       <Input style='margin-top: 10px;'
-        v-if='createSummary'
         type='textarea'
-        v-model="postInfo.summary"
+        v-model="summary"
         placeholder="请输入摘要"
         :autosize='{ minRows: 2, maxRows: 6 }'/>
         <Divider />
     </Row>
     <Row>
-      <h3>设置关键词</h3>
+      <h3>关键词</h3>
       <Select
         v-model="keywords"
         filterable
@@ -102,6 +98,18 @@ export default class PostEditor extends Vue {
     this.postInfo.content = btoa(encodeURIComponent(value));
   }
 
+  private get summary() {
+    if (this.postInfo.summary === undefined) {
+      return '';
+    }
+    return decodeURIComponent(atob(this.postInfo.summary));
+  }
+
+  private set summary(value) {
+    this.postInfo.summary = btoa(encodeURIComponent(value));
+  }
+
+
   private imageContent: Array<any> = [];
 
   private get keywords() {
@@ -112,8 +120,6 @@ export default class PostEditor extends Vue {
   }
 
   private html: string = '';
-
-  private createSummary: boolean = true;
 
   private showImageContents: boolean = false;
 
@@ -171,6 +177,13 @@ export default class PostEditor extends Vue {
 
   private contentChange(value: string, render: string): void {
     this.html = render;
+  }
+
+  private createSummary() {
+    const temp = document.createElement('div');
+    temp.innerHTML = (this.$refs.mde as any).d_render;
+    const text = `${temp.innerText.trim().substr(0, 250).replace(/[\n\r]/g, '    ')}...`;
+    this.summary = text;
   }
 
   private imgAdd(pos: string, file: any) {
